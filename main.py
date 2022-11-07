@@ -2,29 +2,29 @@ import math
 import random
 
 PRINT_ = False
-
+pi_half = math.pi / 2
 # unoptimized condition, acos is very expensive to compute
 def get_angs(s1, s2, s3):
 	return math.acos((s2**2 + s3**2 - s1**2) / (2 * s2 * s3))
 
 # check conditions for being obtuse
 def obtuse_condition(s1, s2, s3):
-	c1 = get_angs(s1, s2, s3) >= math.pi / 2
-	c2 = get_angs(s2, s1, s3) >= math.pi / 2
-	c3 = get_angs(s3, s1, s2) >= math.pi / 2
+	c1 = get_angs(s1, s2, s3) > pi_half
+	c2 = get_angs(s2, s1, s3) > pi_half
+	c3 = get_angs(s3, s1, s2) > pi_half
 	return c1 or c2 or c3
 
 # optimized condition, its obtuse if len is equal or lower than zero
-def get_len(s1, s2, s3):
-	return ((s2**2 + s3**2 - s1**2) / (2 * s2 * s3))
+def get_len(s1, s2, s3): 
+	return (s2**2 + s3**2 - s1**2) 
+  # / (2 * s2 * s3))
 
 # check conditions for being obtuse
 def obtuse_condition_optimized(s1, s2, s3):
-	c1 = get_len(s1, s2, s3) <= 0
-	c2 = get_len(s2, s1, s3) <= 0
-	c3 = get_len(s3, s1, s2) <= 0
+	c1 = get_len(s1, s2, s3) < 0 
+	c2 = get_len(s2, s1, s3) < 0 
+	c3 = get_len(s3, s1, s2) < 0 
 	return c1 or c2 or c3
-
 
 # check conditions for being a triangle
 def side_condition(s1, s2, s3):
@@ -55,7 +55,7 @@ def check_conditions(a_, b_, c_):
 
 # run one instance of experiment with set lenght and precision
 def experiment(interval_, length_, precision_):
-  
+
   # random points in interval
 	p1 = random.randint(0, interval_)
 	p2 = random.randint(0, interval_)
@@ -101,7 +101,13 @@ def monte_carlo_sim(iterations=10000, length=1, precision=1, experiments=10):
 
     trig_prob = sum(trig_hist) / iterations
     obt_prob = sum(obt_hist) / iterations
+    obt_abs_prob = sum(obt_hist) / sum(trig_hist)
+
+    
+
     print("experiment", t, ":", trig_prob, obt_prob)
+    # print("absolute obtuse probability:", obt_abs_prob)
 
 
-monte_carlo_sim(iterations = 1000000)
+
+monte_carlo_sim(precision=6, iterations = 100000)
