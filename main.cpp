@@ -132,42 +132,28 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
   long double trig_prob_full = 0;
   long double obt_prob_full = 0;
 
-  // int nT = 2;
   printf("nt: %d\n", nT);
-// for t in range(experiments):
-#pragma omp parallel num_threads(nT) reduction(+ \
-                                               : trig_prob_full, obt_prob_full)
+
+  // Monte Carlo Simulation (run expermient
+  // n times and get average of results to
+  // obtain approximate probability)
+
+  double interval = length * pow(10, precision);
+
+#pragma omp parallel for num_threads(nT) schedule(static) reduction(+ \
+                                                                    : trig_prob_full, obt_prob_full)
+  for (long int i = 0; i < iterations; i++)
   {
-    // Monte Carlo Simulation (run expermient
-    // n times and get average of results to
-    // obtain approximate probability)
-    printf("setup: %d\n", omp_get_thread_num());
-
-    long double trig_prob = 0;
-    long double obt_prob = 0;
-    double interval = length * pow(10, precision);
-
-#pragma omp parallel for num_threads(nT)
-    for (long int i = 0; i < iterations; i++)
-    {
-      bool_data ret = experiment(interval, length, precision);
-      trig_prob += ret.isTriangle;
-      obt_prob += ret.isObtuse;
-    }
-
-    trig_prob_full += trig_prob;
-    obt_prob_full += obt_prob;
-    printf("finished: %d, local probs: %Lf, %Lf\n", omp_get_thread_num(), trig_prob, obt_prob);
+    bool_data ret = experiment(interval, length, precision);
+    trig_prob_full += ret.isTriangle;
+    obt_prob_full += ret.isObtuse;
   }
-  // for (int t = 0; t < nT; t++)
-  // {
-  printf("\n\nfinal probs: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
+
+  printf("\n\nfinal added probs: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
   printf("divide by: %ld\n", iterations);
 
-  trig_prob_full /= iterations * nT;
-  obt_prob_full /= iterations * nT;
-  // trig_prob_full /= iterations;
-  // obt_prob_full /= iterations;
+  trig_prob_full /= iterations;
+  obt_prob_full /= iterations;
 
   printf("parallel experiment: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
 }
@@ -179,7 +165,6 @@ int main(int argc, char *argv[])
 
   if (nT == 0)
     nT = omp_get_num_procs();
-  // nT = 1;
 
   unsigned long seed[6] = {1806547166, 3311292359,
                            643431772, 1162448557,
