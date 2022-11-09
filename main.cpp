@@ -71,15 +71,7 @@ bool_data check_conditions(double a_, double b_, double c_)
 bool_data experiment(double interval_, int length_, int precision_)
 {
   double p1, p2;
-  // std::uniform_real_distribution<double> distribution(0.0, 1.0);
-  // std::default_random_engine generator;
-
-  // random points in interval
-  // double p1 = random.randint(0, interval_);
-  // double p2 = random.randint(0, interval_);
-
   int myRank = omp_get_thread_num();
-  // int myRank = 0; // simulate repeted rng stream
 
   // double precision from 0 to 1
   if (length_ == 1 && precision_ == 0)
@@ -111,16 +103,6 @@ bool_data experiment(double interval_, int length_, int precision_)
   double i_2 = p2 - p1;
   double i_3 = interval_ - p2;
 
-  if (PRINT_)
-  {
-    // print("interval:")
-    // print(f"{0:.{precision_}f}" + " to " + f"{length_:.{precision_}f}\n")
-    // print("segments:")
-    // print(f"{i_1/(10**precision_):.{precision_}f}")
-    // print(f"{i_2/(10**precision_):.{precision_}f}")
-    // print(f"{i_3/(10**precision_):.{precision_}f}\n")
-  }
-
   // check triangle and obtuse conditions for given sub intervals
   bool_data ret_data = check_conditions(i_1, i_2, i_3);
   return ret_data;
@@ -137,7 +119,6 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
   // Monte Carlo Simulation (run expermient
   // n times and get average of results to
   // obtain approximate probability)
-
   double interval = length * pow(10, precision);
 
 #pragma omp parallel for num_threads(nT) schedule(static) reduction(+ \
@@ -171,6 +152,7 @@ int main(int argc, char *argv[])
   unsigned long seed[6] = {1806547166, 3311292359,
                            643431772, 1162448557,
                            3335719306, 4161054083};
+                           
   RngStream::SetPackageSeed(seed);
   RngArray = new RngStream[nT];
 
