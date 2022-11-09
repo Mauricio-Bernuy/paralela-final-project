@@ -1,8 +1,12 @@
+#include <omp.h>
 #include <math.h>
 #include <random>
 #include <iostream>
+#include "RngStream.h"
 
-bool PRINT_ = false;
+bool PRINT_ = false; // print debug info
+int nT = 1;          // number of threads
+RngStream *RngArray;
 
 // optimized condition, its obtuse if len is equal or lower than zero
 double get_len(double s1, double s2, double s3)
@@ -60,12 +64,12 @@ bool_data check_conditions(double a_, double b_, double c_)
     printf("is not triangle\n");
 
   return bool_data{isTriangle, isObtuse};
-  // return isTriangle, isObtuse
 }
 
 // run one instance of experiment with set lenght and precision
 bool_data experiment(double interval_, int length_, int precision_)
 {
+  double p1, p2;
   // std::uniform_real_distribution<double> distribution(0.0, 1.0);
   // std::default_random_engine generator;
 
@@ -73,8 +77,25 @@ bool_data experiment(double interval_, int length_, int precision_)
   // double p1 = random.randint(0, interval_);
   // double p2 = random.randint(0, interval_);
 
-  double p1 = 0.2;
-  double p2 = 0.6;
+  int myRank = omp_get_thread_num();
+  // int myRank = 0; // simulate repeted rng stream
+
+  // double precision from 0 to 1
+  if (length_ == 1 && precision_ == 0)
+  {
+    p1 = RngArray[myRank].RandU01();
+    p2 = RngArray[myRank].RandU01();
+  }
+
+  // precision set by precision_
+  else
+  {
+    double low = 0;
+    double high = interval_;
+    //* long int cast for up to length_ = 1, precision_ = 19
+    p1 = low + static_cast<long int>((high - low + 1.0) * RngArray[myRank].RandU01());
+    p2 = low + static_cast<long int>((high - low + 1.0) * RngArray[myRank].RandU01());
+  }
 
   // set p1 as min and p2 as max
   if (p1 > p2)
@@ -85,12 +106,9 @@ bool_data experiment(double interval_, int length_, int precision_)
   }
 
   // create sub intervals
-  // double i_1 = p1 - 0;
-  // double i_2 = p2 - p1;
-  // double i_3 = interval_ - p2;
-  double i_1 = 0.3;
-  double i_2 = 0.4;
-  double i_3 = 0.6;
+  double i_1 = p1 - 0;
+  double i_2 = p2 - p1;
+  double i_3 = interval_ - p2;
 
   if (PRINT_)
   {
@@ -110,14 +128,23 @@ bool_data experiment(double interval_, int length_, int precision_)
 // Simultation
 void monte_carlo_sim(int iterations = 10000, int length = 1, int precision = 1, int experiments = 10)
 {
+  double trig_prob_full = 0;
+  double obt_prob_full = 0;
+
+  // int nT = 2;
+  printf("nt:%d\n", nT);
   // for t in range(experiments):
-  for (int t = 0; t < experiments; t++)
+#pragma omp parallel for num_threads(nT) reduction(+ \
+                                                   : trig_prob_full, obt_prob_full)
+  for (int t = 0; t < nT; t++)
   {
     // Monte Carlo Simulation (run expermient
     // n times and get average of results to
     // obtain approximate probability)
     // bool [iterations] trig_hist;
     // bool [iterations] obt_hist;
+    printf("setup: %d\n", omp_get_thread_num());
+
     double trig_prob = 0;
     double obt_prob = 0;
     double interval = length * pow(10, precision);
@@ -129,19 +156,32 @@ void monte_carlo_sim(int iterations = 10000, int length = 1, int precision = 1, 
       obt_prob += ret.isObtuse;
     }
 
-    trig_prob /= iterations;
-    obt_prob /= iterations;
-    printf("experiment %d: %f, %f\n", t, trig_prob, obt_prob);
+    trig_prob_full += trig_prob;
+    obt_prob_full += obt_prob;
+    printf("finished: %d\n", omp_get_thread_num());
+
+    // trig_prob /= iterations;
+    // obt_prob /= iterations;
+    // printf("experiment %d: %f, %f\n", t, trig_prob, obt_prob);
   }
+
+  trig_prob_full /= iterations * nT;
+  obt_prob_full /= iterations * nT;
+
+  printf("parallel experiment: %f, %f\n", trig_prob_full, obt_prob_full);
 }
 
 int main()
 {
-  // std::cout << side_condition(3, 4, 5) << "\n";
-  // std::cout << obtuse_condition_optimized(3, 4, 5) << "\n";
+  nT = omp_get_num_procs();
+  // nT = 1;
 
-  // bool_data ret = check_conditions(3, 4, 5);
-  // std::cout << ret.isTriangle << " " << ret.isObtuse << "\n";
-  monte_carlo_sim();
+  unsigned long seed[6] = {1806547166, 3311292359,
+                           643431772, 1162448557,
+                           3335719306, 4161054083};
+  RngStream::SetPackageSeed(seed);
+  RngArray = new RngStream[nT];
+
+  monte_carlo_sim(100000000, 1, 0);
   return 0;
 }
