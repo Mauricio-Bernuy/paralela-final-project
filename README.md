@@ -2,5 +2,5 @@
  
 g++ -fopenmp ranOpenMP.cpp RngStream.cpp -o ranOpenMP
 
-
-g++ -fopenmp main.cpp RngStream.cpp -o main && time ./main
+# run
+g++ -fopenmp main.cpp RngStream.cpp -o main && time ./main 0 10000000

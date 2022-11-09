@@ -1,6 +1,7 @@
 #include <omp.h>
 #include <math.h>
 #include <random>
+#include <string>
 #include <iostream>
 #include "RngStream.h"
 
@@ -133,46 +134,51 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
 
   // int nT = 2;
   printf("nt: %d\n", nT);
-  // for t in range(experiments):
-#pragma omp parallel for num_threads(nT) reduction(+ \
-                                                   : trig_prob_full, obt_prob_full)
-  for (int t = 0; t < nT; t++)
+// for t in range(experiments):
+#pragma omp parallel num_threads(nT) reduction(+ \
+                                               : trig_prob_full, obt_prob_full)
   {
     // Monte Carlo Simulation (run expermient
     // n times and get average of results to
     // obtain approximate probability)
-
     printf("setup: %d\n", omp_get_thread_num());
 
     long double trig_prob = 0;
     long double obt_prob = 0;
     double interval = length * pow(10, precision);
 
+#pragma omp parallel for num_threads(nT)
     for (long int i = 0; i < iterations; i++)
     {
       bool_data ret = experiment(interval, length, precision);
       trig_prob += ret.isTriangle;
       obt_prob += ret.isObtuse;
     }
-    printf("finished: %d, local probs: %Lf, %Lf\n", omp_get_thread_num(), trig_prob, obt_prob);
 
     trig_prob_full += trig_prob;
     obt_prob_full += obt_prob;
+    printf("finished: %d, local probs: %Lf, %Lf\n", omp_get_thread_num(), trig_prob, obt_prob);
   }
+  // for (int t = 0; t < nT; t++)
+  // {
   printf("\n\nfinal probs: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
-  printf("divide by: %ld\n", iterations * nT);
+  printf("divide by: %ld\n", iterations);
 
   trig_prob_full /= iterations * nT;
   obt_prob_full /= iterations * nT;
+  // trig_prob_full /= iterations;
+  // obt_prob_full /= iterations;
 
   printf("parallel experiment: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-  long int nexp;
-  std::cin >> nT >> nexp;
-  // nT = omp_get_num_procs();
+  nT = std::stoi(argv[1]);
+  long int nexp = std::stol(argv[2]);
+
+  if (nT == 0)
+    nT = omp_get_num_procs();
   // nT = 1;
 
   unsigned long seed[6] = {1806547166, 3311292359,
