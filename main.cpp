@@ -132,7 +132,7 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
   long double trig_prob_full = 0;
   long double obt_prob_full = 0;
 
-  printf("nt: %d\n", nT);
+  printf("Using: %d threads\n", nT);
 
   // Monte Carlo Simulation (run expermient
   // n times and get average of results to
@@ -148,14 +148,16 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
     trig_prob_full += ret.isTriangle;
     obt_prob_full += ret.isObtuse;
   }
-
-  printf("\n\nfinal added probs: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
-  printf("divide by: %ld\n", iterations);
+  printf("----------------\n");
+  printf("reduced probability count: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
+  printf("divide by: %ld iterations\n", iterations);
 
   trig_prob_full /= iterations;
   obt_prob_full /= iterations;
 
-  printf("parallel experiment: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
+  printf("----------------\n");
+  printf("Parallel Monte Carlo results:\n\n| triangle probability | obtuse probability |\n");
+  printf("\t%Lf       |      %Lf\t\n", trig_prob_full, obt_prob_full);
 }
 
 int main(int argc, char *argv[])
