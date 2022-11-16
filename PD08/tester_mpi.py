@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 
-iterations = 10
+iterations = 100
 
 print("   processors", "  |\t","average(s)")
 print("-------------------------------------")

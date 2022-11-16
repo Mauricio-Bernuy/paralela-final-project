@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 
-iterations = 10
+iterations = 100
 program_path = "./omp -noevalprints"
 
 print("   processors", "  |\t","average(s)")

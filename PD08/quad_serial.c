@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
-#include <omp.h>
+#include <string>
+#include <iostream>
 
-int nT = 8;
-int nC = 1;
+bool PRINTING = true;
 
 int main(int argc, char *argv[]);
 double f(double x);
@@ -18,6 +18,11 @@ int main(int argc, char *argv[])
 
 /******************************************************************************/
 {
+  std::string TESTING = "-noevalprints";
+  if (argc > 1)
+    if (!TESTING.compare(argv[1]))
+      PRINTING = false;
+
   double a = 0.0;
   double b = 10.0;
   double error;
@@ -30,15 +35,18 @@ int main(int argc, char *argv[])
   double wtime2;
   double x;
 
-  timestamp();
-  printf("\n");
-  printf("QUAD_SECUENCIAL:\n");
-  printf("  Integral de f(x)= 50/( pi * ( 2500 * x * x + 1 ) ).\n");
-  printf("A (inicio) = %f\n", a);
-  printf("B (fin)= %f\n", b);
-  printf("  N = %ld\n", n);
-  printf("valor exacto = %24.16f\n", exact);
-  printf("\n");
+  if (PRINTING)
+  {
+    timestamp();
+    printf("\n");
+    printf("QUAD_SERIAL:\n");
+    printf("  Integral de f(x)= 50/( pi * ( 2500 * x * x + 1 ) ).\n");
+    printf("A (inicio) = %f\n", a);
+    printf("B (fin)= %f\n", b);
+    printf("  N = %ld\n", n);
+    printf("valor exacto = %24.16f\n", exact);
+    printf("\n");
+  }
 
   wtime1 = cpu_time();
 
@@ -55,18 +63,23 @@ int main(int argc, char *argv[])
   error = fabs(total - exact);
   wtime = wtime2 - wtime1;
 
-  printf("\n");
-  printf("  Estimate = %24.16f\n", total);
-  printf("  Error    = %e\n", error);
-  printf("  Time     = %f\n", wtime);
-  /*
-    Terminate.
-  */
-  printf("\n");
-  printf("QUAD_SERIAL:\n");
-  printf("  Normal end of execution.\n");
-  printf("\n");
-  timestamp();
+  if (PRINTING)
+  {
+    printf("\n");
+    printf("  Estimate = %24.16f\n", total);
+    printf("  Error    = %e\n", error);
+    printf("  Time     = %f\n", wtime);
+    /*
+      Terminate.
+    */
+    printf("\n");
+    printf("QUAD_SERIAL:\n");
+    printf("  Normal end of execution.\n");
+    printf("\n");
+    timestamp();
+  }
+  else
+    printf("%f\n", wtime);
 
   return 0;
 }

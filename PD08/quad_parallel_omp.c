@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     if (!TESTING.compare(argv[1]))
       PRINTING = false;
   std::cin >> nT;
-  
+
   double a = 0.0;
   double b = 10.0;
   double error;
