@@ -3,6 +3,8 @@
 #include <math.h>
 #include <time.h>
 #include <mpi.h>
+#include <string>
+#include <iostream>
 
 int nT = 4;
 bool PRINTING = true;
