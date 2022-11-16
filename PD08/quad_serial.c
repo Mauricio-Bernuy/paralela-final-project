@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <omp.h>
+
+int nT = 8;
+int nC = 1;
 
 int main(int argc, char *argv[]);
 double f(double x);
@@ -18,8 +22,8 @@ int main(int argc, char *argv[])
   double b = 10.0;
   double error;
   double exact = 0.49936338107645674464;
-  int i;
-  int n = 10000000;
+  long int i;
+  long int n = 100000000;
   double total;
   double wtime;
   double wtime1;
@@ -32,7 +36,7 @@ int main(int argc, char *argv[])
   printf("  Integral de f(x)= 50/( pi * ( 2500 * x * x + 1 ) ).\n");
   printf("A (inicio) = %f\n", a);
   printf("B (fin)= %f\n", b);
-  printf("  N = %d\n", n);
+  printf("  N = %ld\n", n);
   printf("valor exacto = %24.16f\n", exact);
   printf("\n");
 
@@ -75,6 +79,7 @@ double f(double x)
 
   return value;
 }
+
 double cpu_time(void)
 {
   double value;

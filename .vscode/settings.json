@@ -3,6 +3,7 @@
     "*.html": "html",
     "*.css": "tailwindcss",
     "iostream": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "type_traits": "c"
   }
 }
