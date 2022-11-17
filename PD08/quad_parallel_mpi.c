@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     a = 0.0;
     b = 10.0;
     n = 100000000;
+    std::cin >> n;
 
     exact = 0.49936338107645674464;
     total = 0.0;

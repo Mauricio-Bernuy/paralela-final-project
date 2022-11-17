@@ -25,12 +25,13 @@ int main(int argc, char *argv[])
     if (!TESTING.compare(argv[1]))
       PRINTING = false;
   std::cin >> nT;
+  long int n = 100000000;
+  std::cin >> n;
 
   double a = 0.0;
   double b = 10.0;
   double error;
   double exact = 0.49936338107645674464;
-  long int n = 100000000;
   double wtime;
   double wtime1;
   double wtime2;
