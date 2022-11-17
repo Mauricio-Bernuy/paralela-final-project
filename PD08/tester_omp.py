@@ -3,7 +3,7 @@ from subprocess import Popen, PIPE
 iterations = 20
 program_path = "./omp -noevalprints"
 
-for n in [10000000, 100000000,1000000000]:
+for n in [1000000, 10000000,100000000]:
   print("OMP, n:",n)
   print("   processors", "  |\t","average(s)")
   print("-------------------------------------")
