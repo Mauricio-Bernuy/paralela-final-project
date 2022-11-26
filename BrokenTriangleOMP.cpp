@@ -5,8 +5,10 @@
 #include <iostream>
 #include "RngStream.h"
 
-bool PRINT_ = false; // print debug info
-int nT = 1;          // number of threads
+bool PRINT_ = false;   // print debug info
+bool RES_ONLY = false; // print debug info
+
+int nT = 1; // number of threads
 RngStream *RngArray;
 
 // optimized condition, its obtuse if len is equal or lower than zero
@@ -111,16 +113,22 @@ bool_data experiment(double interval_, int length_, int precision_)
 // Simultation
 void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision = 1, int experiments = 10)
 {
+  double w1, w2;
   long double trig_prob_full = 0;
   long double obt_prob_full = 0;
 
-  printf("Using: %d threads\n", nT);
+  if (!RES_ONLY)
+    printf("Using: %d threads\n", nT);
 
   // Monte Carlo Simulation (run expermient
   // n times and get average of results to
   // obtain approximate probability)
   double interval = length * pow(10, precision);
 
+  w1 = omp_get_wtime();
+
+// schedule static as the workload is balanced per thread
+// reduction = log(n)
 #pragma omp parallel for num_threads(nT) schedule(static) reduction(+ \
                                                                     : trig_prob_full, obt_prob_full)
   for (long int i = 0; i < iterations; i++)
@@ -129,22 +137,42 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
     trig_prob_full += ret.isTriangle;
     obt_prob_full += ret.isObtuse;
   }
-  printf("----------------\n");
-  printf("reduced probability count: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
-  printf("divide by: %ld iterations\n", iterations);
+
+  w2 = omp_get_wtime();
+
+  if (!RES_ONLY)
+  {
+    printf("----------------\n");
+    printf("reduced probability count: %Lf, %Lf\n", trig_prob_full, obt_prob_full);
+    printf("divide by: %ld iterations\n", iterations);
+  }
 
   trig_prob_full /= iterations;
   obt_prob_full /= iterations;
 
-  printf("----------------\n");
-  printf("Parallel Monte Carlo results:\n\n| triangle probability | obtuse probability |\n");
-  printf("\t%Lf       |      %Lf\t\n", trig_prob_full, obt_prob_full);
+  if (!RES_ONLY)
+  {
+    printf("----------------\n");
+    printf("Parallel Monte Carlo results:\n\n| triangle probability | obtuse probability |\n");
+    printf("\t%Lf       |      %Lf\t\n", trig_prob_full, obt_prob_full);
+    printf("----------------\n");
+    printf("Parallel experiment took %f seconds\n", w2 - w1);
+  }
+  else
+    printf("%Lf\n%Lf\n%f\n", trig_prob_full, obt_prob_full, w2 - w1);
 }
 
 int main(int argc, char *argv[])
 {
-  nT = std::stoi(argv[1]);
-  long int nexp = std::stol(argv[2]);
+  long int nexp = 10000;
+
+  if (argc > 1)
+    nT = std::stoi(argv[1]);
+  if (argc > 2)
+    nexp = std::stol(argv[2]);
+  if (argc > 3)
+    if (std::string("RES_ONLY").compare(argv[3]) == 0)
+      RES_ONLY = true;
 
   if (nT == 0)
     nT = omp_get_num_procs();
@@ -152,7 +180,7 @@ int main(int argc, char *argv[])
   unsigned long seed[6] = {1806547166, 3311292359,
                            643431772, 1162448557,
                            3335719306, 4161054083};
-                           
+
   RngStream::SetPackageSeed(seed);
   RngArray = new RngStream[nT];
 

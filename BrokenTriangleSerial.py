@@ -103,8 +103,6 @@ def monte_carlo_sim(iterations=10000, length=1, precision=1, experiments=10):
     obt_prob = sum(obt_hist) / iterations
     obt_abs_prob = sum(obt_hist) / sum(trig_hist)
 
-    
-
     print("experiment", t, ":", trig_prob, obt_prob)
     # print("absolute obtuse probability:", obt_abs_prob)
 
