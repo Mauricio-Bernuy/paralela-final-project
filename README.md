@@ -1,5 +1,8 @@
 # paralela-final-project
- 
+```
+git clean -f && git checkout -- . && git pull
+```
+
 ## SERIAL
 ### compile
 ```bash
