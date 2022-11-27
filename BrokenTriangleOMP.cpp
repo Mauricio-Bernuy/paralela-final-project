@@ -128,7 +128,7 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
   w1 = omp_get_wtime();
 
 // schedule static as the workload is balanced per thread
-// reduction = log(n)
+// reduction = log(p)
 #pragma omp parallel for num_threads(nT) schedule(static) reduction(+ \
                                                                     : trig_prob_full, obt_prob_full)
   for (long int i = 0; i < iterations; i++)

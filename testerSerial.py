@@ -16,7 +16,7 @@ iterations = 20
 print(f"\nIterations per test: {iterations}")
 
 for n in n_lengths:
-    print("\nOMP, n:", "{:.0e}".format(n))
+    print("\nSERIAL, n:", "{:.0e}".format(n))
     print(
         "   processors   |  triangle probability  |   obtuse probability   |     average time(s)"
     )
