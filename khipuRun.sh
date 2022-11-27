@@ -8,8 +8,8 @@ g++ BrokenTriangleSerial.cpp RngStream.cpp -o BrokenTriangleSerial
 g++ -fopenmp BrokenTriangleOMP.cpp RngStream.cpp -o BrokenTriangleOMP
 
 # run python test scripts
-unbuffer python3 testerSerial.py | tee serialResults.txt
-unbuffer python3 testerOMP.py | tee OMPResults.txt
+unbuffer python3 testerSerial.py | tee test_results/serialResults.txt
+unbuffer python3 testerOMP.py | tee test_results/OMPResults.txt
 
 # unload 
 module unload gcc

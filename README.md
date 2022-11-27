@@ -50,5 +50,5 @@ python3 testerOMP.py > OMPResults.txt
 
 ## Khipu Run
 ```bash
-
+bash ./khipuRun.sh
 ```
