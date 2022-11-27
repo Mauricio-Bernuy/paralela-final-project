@@ -1,0 +1,11 @@
+Using: 80 threads
+----------------
+reduced probability count: 24999977044.000000, 17056052672.000000
+divide by: 100000000000 iterations
+----------------
+Parallel Monte Carlo results:
+
+| triangle probability | obtuse probability |
+        0.250000       |      0.170561
+----------------
+Parallel experiment took 988.957919 seconds

@@ -11,6 +11,9 @@ g++ -fopenmp BrokenTriangleOMP.cpp RngStream.cpp -o BrokenTriangleOMP
 unbuffer python3 testerSerial.py | tee test_results/serialResults.txt
 unbuffer python3 testerOMP.py | tee test_results/OMPResults.txt
 
+# run final with n=10^11 
+unbuffer ./BrokenTriangleOMP 80 100000000000 | tee test_results/bigOMPResult.txt
+
 # unload 
 module unload gcc
 module unload python
