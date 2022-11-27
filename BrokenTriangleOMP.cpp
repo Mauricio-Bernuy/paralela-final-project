@@ -69,7 +69,7 @@ bool_data check_conditions(double a_, double b_, double c_)
   return bool_data{isTriangle, isObtuse};
 }
 
-// run one instance of experiment with set lenght and precision
+// run one instance of experiment with set length and precision
 bool_data experiment(double interval_, int length_, int precision_)
 {
   double p1, p2;

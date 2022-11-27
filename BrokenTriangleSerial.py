@@ -3,6 +3,7 @@ import random
 
 PRINT_ = False
 pi_half = math.pi / 2
+
 # unoptimized condition, acos is very expensive to compute
 def get_angs(s1, s2, s3):
 	return math.acos((s2**2 + s3**2 - s1**2) / (2 * s2 * s3))
@@ -14,10 +15,9 @@ def obtuse_condition(s1, s2, s3):
 	c3 = get_angs(s3, s1, s2) > pi_half
 	return c1 or c2 or c3
 
-# optimized condition, its obtuse if len is equal or lower than zero
+# optimized condition, its obtuse if len is lower than zero
 def get_len(s1, s2, s3): 
 	return (s2**2 + s3**2 - s1**2) 
-  # / (2 * s2 * s3))
 
 # check conditions for being obtuse
 def obtuse_condition_optimized(s1, s2, s3):

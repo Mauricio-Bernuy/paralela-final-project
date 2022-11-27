@@ -12,12 +12,4 @@
 #SBATCH --time=60:00
 
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
-
-module load gcc
-module load python
-
-g++ -fopenmp BrokenTriangleOMP.cpp RngStream.cpp -o BrokenTriangleOMP
-python3 testerOMP.py
-
-module unload gcc
-module unload python
+bash ./khipuRun.sh

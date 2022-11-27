@@ -78,6 +78,4 @@ trig_prob /= n
 obt_prob /= n
 
 return trig_prob, obt_prob
-
-
 ```

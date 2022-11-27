@@ -70,7 +70,7 @@ bool_data check_conditions(double a_, double b_, double c_)
   return bool_data{isTriangle, isObtuse};
 }
 
-// run one instance of experiment with set lenght and precision
+// run one instance of experiment with set length and precision
 bool_data experiment(double interval_, int length_, int precision_)
 {
   double p1, p2;
@@ -127,10 +127,6 @@ void monte_carlo_sim(long int iterations = 10000, int length = 1, int precision 
 
   w1 = clock();
 
-// schedule static as the workload is balanced per thread
-// reduction = log(n)
-#pragma omp parallel for num_threads(nT) schedule(static) reduction(+ \
-                                                                    : trig_prob_full, obt_prob_full)
   for (long int i = 0; i < iterations; i++)
   {
     bool_data ret = experiment(interval, length, precision);
